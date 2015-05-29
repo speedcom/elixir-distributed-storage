@@ -17,4 +17,12 @@ defmodule KV.Registry do
     GenServer.call(server, {:lookup, name})
   end
 
+  @doc """
+  Ensures that pid with `name` is stored in `server`
+  """
+  def create(server, name) do
+    GenServer.cast(server, {:create, name})
+  end
+
+
 end
