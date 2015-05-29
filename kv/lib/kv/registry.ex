@@ -10,6 +10,8 @@ defmodule KV.Registry do
 
   @doc """
   Looks up the bucket pid for `name` stored in `server`
+
+  Returns `{:ok, pid}` if the bucket exists, `:error` otherwise.
   """
   def lookup(server, name) do
     GenServer.call(server, {:lookup, name})
