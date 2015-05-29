@@ -24,5 +24,11 @@ defmodule KV.Registry do
     GenServer.cast(server, {:create, name})
   end
 
+  ##Server callbacks
+
+  def init(:ok) do
+    {:ok, HashDict.new}
+  end
+
 
 end
