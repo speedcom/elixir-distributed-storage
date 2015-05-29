@@ -24,7 +24,7 @@ defmodule KV.Registry do
     GenServer.cast(server, {:create, name})
   end
 
-  ##Server callbacks
+  ##Server Callbacks
 
   def init(:ok) do
     {:ok, HashDict.new}
@@ -34,6 +34,14 @@ defmodule KV.Registry do
     {:reply, HashDict.fetch(names, name), names}
   end
 
+  def handle_cast({:create, name}, names) do
+    if HashDict.has_key?(names, name) do
+      {:noreply, names}
+    else
+      {:ok, bucket} = KV.Bucket.start_link
+      {:noreply, HashDict.put(names, name, bucket)}
+    end
+  end
 
 
 end
