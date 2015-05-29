@@ -1,4 +1,0 @@
-KevValueStorage
-===============
-
-** TODO: Add description **
