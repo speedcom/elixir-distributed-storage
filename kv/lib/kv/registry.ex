@@ -30,5 +30,10 @@ defmodule KV.Registry do
     {:ok, HashDict.new}
   end
 
+  def handle_call({:lookup, name}, _from, names) do
+    {:reply, HashDict.fetch(names, name), names}
+  end
+
+
 
 end
