@@ -38,7 +38,12 @@ defmodule KV.RegistryTest do
   end
 
   test "send events on create and crash", %{registry: registry} do
+    KV.Registry.create(registry, "shopping")
+    {:ok, bucket} = KV.Registry.lookup(registry, "shopping")
+    assert_receive {:create, "shopping", ^bucket}
 
+    Agent.stop(bucket)
+    assert_receive {:exit, "shopping", ^bucket}
   end
 
 end
