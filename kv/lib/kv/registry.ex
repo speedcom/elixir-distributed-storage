@@ -59,10 +59,13 @@ defmodule KV.Registry do
     end
   end
 
-  def handle_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
-    {name, refs} = HashDict.pop(refs, ref)
-    names = HashDict.delete(names, name)
-    {:noreply, {names, refs}}
+  def handle_info({:DOWN, ref, :process, pid, _reason}, state) do
+    {name, refs} = HashDict.pop(state.refs, ref)
+    names = HashDict.delete(state.names, name)
+
+    GenEvent.sync_notify(state.events, {:exit, name, pid})
+
+    {:noreply, %{state | names: names, refs: refs}}
   end
 
   def handle_info(_msg, state) do
