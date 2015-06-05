@@ -37,4 +37,8 @@ defmodule KV.RegistryTest do
     assert KV.Registry.lookup(registry, "shopping") == :error
   end
 
+  test "send events on create and crash", %{registry: registry} do
+
+  end
+
 end
