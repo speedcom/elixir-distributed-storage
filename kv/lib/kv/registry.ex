@@ -4,8 +4,8 @@ defmodule KV.Registry do
   @doc """
   Starts the regsitry
   """
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
+  def start_link(event_bus, opts \\ []) do
+    GenServer.start_link(__MODULE__, event_bus, opts)
   end
 
   @doc """
