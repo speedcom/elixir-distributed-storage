@@ -44,15 +44,18 @@ defmodule KV.Registry do
     {:reply, HashDict.fetch(state.names, name), state}
   end
 
-  def handle_cast({:create, name}, {names, refs}) do
-    if HashDict.has_key?(names, name) do
-      {:noreply, names}
+  def handle_cast({:create, name}, state) do
+    if HashDict.has_key?(state.names, name) do
+      {:noreply, state}
     else
       {:ok, bucket} = KV.Bucket.start_link
       ref = Process.monitor(bucket)
-      refs = HashDict.put(refs, ref, name)
-      names = HashDict.put(names, name, bucket)
-      {:noreply, {names, refs}}
+      refs = HashDict.put(state.refs, ref, name)
+      names = HashDict.put(state.names, name, bucket)
+
+      GenEvent.sync_notify(state.events, {:create, name, bucket})
+
+      {:noreply, %{state | names: names, refs: refs}}
     end
   end
 
