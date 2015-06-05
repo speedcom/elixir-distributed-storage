@@ -34,18 +34,14 @@ defmodule KV.Registry do
 
   ##Server Callbacks
 
-  def init(:ok) do
+  def init(events) do
     names = HashDict.new
     refs = HashDict.new
-    {:ok, {names, refs}}
+    {:ok, %{names: names, refs: refs, events: events}}
   end
 
-  def handle_call(:stop, _from, state) do
-    {:stop, :normal, :ok, state}
-  end
-
-  def handle_call({:lookup, name}, _from, {names, _} = state) do
-    {:reply, HashDict.fetch(names, name), state}
+  def handle_call({:lookup, name}, _from, state) do
+    {:reply, HashDict.fetch(state.names, name), state}
   end
 
   def handle_cast({:create, name}, {names, refs}) do
