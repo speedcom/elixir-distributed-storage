@@ -11,8 +11,9 @@ defmodule KV.RegistryTest do
   end
 
   setup do
+    {:ok, bucket_sup} = KV.Bucket.Supervisor.start_link
     {:ok, manager} = GenEvent.start_link
-    {:ok, registry} = KV.Registry.start_link(manager)
+    {:ok, registry} = KV.Registry.start_link(manager, bucket_sup)
 
     GenEvent.add_mon_handler(manager, Forwarder, self())
     {:ok, registry: registry}

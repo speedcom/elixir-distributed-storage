@@ -4,8 +4,8 @@ defmodule KV.Registry do
   @doc """
   Starts the regsitry
   """
-  def start_link(event_bus, opts \\ []) do
-    GenServer.start_link(__MODULE__, event_bus, opts)
+  def start_link(event_manager, bucket_sup, opts \\ []) do
+    GenServer.start_link(__MODULE__, {event_manager, bucket_sup}, opts)
   end
 
   @doc """
@@ -34,10 +34,10 @@ defmodule KV.Registry do
 
   ##Server Callbacks
 
-  def init(events) do
+  def init({events, bucket_sup}) do
     names = HashDict.new
     refs = HashDict.new
-    {:ok, %{names: names, refs: refs, events: events}}
+    {:ok, %{names: names, refs: refs, events: events, bucket_sup: bucket_sup}}
   end
 
   def handle_call({:lookup, name}, _from, state) do
@@ -48,9 +48,9 @@ defmodule KV.Registry do
     if HashDict.has_key?(state.names, name) do
       {:noreply, state}
     else
-      {:ok, bucket} = KV.Bucket.start_link
-      ref = Process.monitor(bucket)
-      refs = HashDict.put(state.refs, ref, name)
+      {:ok, bucket} = KV.Bucket.Supervisor.start_bucket(state.bucket_sup)
+      monit = Process.monitor(bucket)
+      refs  = HashDict.put(state.refs, monit, name)
       names = HashDict.put(state.names, name, bucket)
 
       GenEvent.sync_notify(state.events, {:create, name, bucket})
