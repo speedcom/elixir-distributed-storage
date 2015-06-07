@@ -11,7 +11,7 @@ defmodule KV.Supervisor do
   def init(:ok) do
     children = [
       worker(GenEvent, [[name: @manager_name]]),
-      supervisor(KV.RegistryBucket.Supervisor, [@manager_name, [name: @registry_bucket_sup_name]])
+      supervisor(KV.RegistryBucket.Supervisor, [[name: @registry_bucket_sup_name]])
     ]
 
     supervise(children, strategy: :one_for_one)

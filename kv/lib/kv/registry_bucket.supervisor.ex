@@ -12,7 +12,7 @@ defmodule KV.RegistryBucket.Supervisor do
   def init(:ok) do
     children = [
       supervisor(KV.Bucket.Supervisor, [[name: @bucket_sup_name]]),
-      worker(KV.Registry, [@bucket_sup_name, [name: @registry_name]])
+      worker(KV.Registry, [@manager_name, @bucket_sup_name, [name: @registry_name]])
     ]
 
     supervise(children, strategy: :one_for_all)
